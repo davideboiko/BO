@@ -2,7 +2,7 @@ import requests
 from bs4 import BeautifulSoup
 
 # Effettua la richiesta HTTP
-r = requests.get("http://web-13.challs.olicyber.it/")
+r = requests.get("http://gabibboinnovazione.challs.olicyber.it")
 print(r.text)
 
 # Crea l'oggetto BeautifulSoup per analizzare l'HTML

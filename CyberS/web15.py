@@ -2,7 +2,7 @@ import requests
 from bs4 import BeautifulSoup
 
 # URL della pagina da analizzare
-url = "http://web-15.challs.olicyber.it/"
+url = "http://gabibboinnovazione.challs.olicyber.it"
 
 # Effettua la richiesta HTTP per ottenere il contenuto della pagina
 response = requests.get(url)

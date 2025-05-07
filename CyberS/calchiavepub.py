@@ -1,18 +1,22 @@
-import hashlib
-# Messaggio da hashare
-msg = 'hash_me_pls'.encode()
+# Calcolo della chiave pubblica e cifratura del messaggio
 
-# Calcolo dell'hash SHA3-384
-hash_sha3_384 = hashlib.sha3_384(msg).hexdigest()
-print(hash_sha3_384)
+# Parametri
+p = 27795989555654622353
+q = 33808550944382579633
+e = 65537
 
+# Calcolo del modulo n
+n = p * q
 
-import hmac
+# Messaggio da cifrare
+message = "Adleman"
 
-# Chiave e messaggio
-key = bytes.fromhex('808e3a8af7f11d203f67120220d2cec0e12d4489908ac2492ab6dd811cf4ebfa')
-msg = 'La mia integrità è importante!'.encode()
+# Conversione in intero
+message_int = int.from_bytes(message.encode('utf-8'), byteorder='big')
 
-# Calcolo dell'HMAC con SHA-224
-hmac_sha224 = hmac.new(key, msg, hashlib.sha224).hexdigest()
-print(hmac_sha224)
+# Cifratura RSA
+ciphertext = pow(message_int, e, n)
+
+# Stampa del risultato
+print("Messaggio in chiaro (intero):", message_int)
+print("Messaggio cifrato:", ciphertext)
