@@ -1,21 +1,17 @@
 def ricerca_binaria(lista_n, n):
-    lista_n:list = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]
+    if not lista_n:
+        return False  # caso base: lista vuota
 
-    mid: int = len(lista_n) // 2
+    mid = len(lista_n) // 2
 
     if lista_n[mid] == n:
-
         return True
-    
-    if lista_n[mid] > n:
-
-        i:int = 0
-        j:int = mid
-
-        return ricerca_binaria(lista_n[i:j], n)
-
+    elif lista_n[mid] > n:
+        return ricerca_binaria(lista_n[:mid], n)
     else:
+        return ricerca_binaria(lista_n[mid+1:], n)
 
-        j:int = mid
-        
-        return ricerca_binaria(lista_n[i:j], n)
+
+numeri = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+print(ricerca_binaria(numeri, 5))   # True
+print(ricerca_binaria(numeri, 11))  # False
