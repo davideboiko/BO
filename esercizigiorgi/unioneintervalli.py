@@ -1,8 +1,13 @@
 def merge_intervals(intervals):
 
-    for i in intervals:
-        if i[0] < i[1]:
-             
+
+    lista_n = []
+
+    for i in range(len(intervals)-1):
+
+        if intervals[i][i] != intervals[i+1][i-1]:
+            
+
 
 
 
