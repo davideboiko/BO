@@ -15,5 +15,5 @@ def romaninteger(s:str) -> int:
     }
     for i in s:
         if i == valori:
-            som += valori[value] 
+            som += valori[] 
 
