@@ -79,3 +79,22 @@ class Email(Documento):
             f"Titolo: {self.titolo_m}\n"
             f"Messaggio: {self.text}"
         )
+    
+    
+
+class File(Documento):
+    def __init__(self, text, nomePercorso:str):
+        super().__init__(text)
+        self.nomePercorso = nomePercorso
+
+    def setNomePercorso(self, percorso: str):
+        self.nomePercorso = percorso
+
+    def getNomePercorso(self):
+        return self.nomePercorso
+    
+    def getText(self):
+        percorso_file = os.path.join(self.nomePercorso, "document.txt")
+        
+        return f"Percorso: {percorso_file}\nContenuto: {self.testo}"
+
