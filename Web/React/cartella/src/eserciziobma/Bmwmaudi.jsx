@@ -1,3 +1,5 @@
+/*
+
 import { useState } from "react";
 import reactLogo from "../assets/react.svg"; // perché Bmwmaudi.jsx è dentro eserciziobma
 import viteLogo from "/vite.svg";           // perché vite.svg è in public
@@ -68,3 +70,4 @@ export default function SelezioneAuto() {
     </div>
   );
 }
+*/
