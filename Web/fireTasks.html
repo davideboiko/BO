@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <div id="tasks"></div>
+    <input type="name" id="task">
+    <button id="add">Add Task</button>
+
+    <script>
+        const URL_BASE="";
+
+        const btn = document.querySelector("#add")
+        btn.addEventListener("click", ()=> {
+            const task=document.getElementById("task").value 
+            alert(task)
+            const newtask={
+                test:test,
+                done:false
+            } 
+            fetch(URL_BASE+".json",{
+                method:"POST",
+                headers:{
+                "Content-Type":"application/json"
+                },
+                body:JSON.stringify(newtask)
+            
+            }
+         ).then(resp => resp.json()).then(risp => console.log(risp)).catch(err => consol.error(err))
+        } )
+    </script>
+
+</body>
+</html>
