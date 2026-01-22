@@ -1,0 +1,296 @@
+import { useEffect, useState } from "react";
+import {
+  StyleSheet,
+  Text,
+  TextInput,
+  View,
+  Button,
+  ScrollView,
+  FlatList,
+} from "react-native";
+import TaskItem from "./components/TaskItem";
+import TaskInput from "./components/TaskInput";
+import { addTask, doneTask, fetchTasks } from "./services/tasksService";
+
+export default function App() {
+  // const [task, setTask] = useState("");
+  const [tasks, setTasks] = useState([]);
+  const [modalVisible, setModalVisible] = useState(false);
+
+  function startAddTask() {
+    setModalVisible(true); //Apre la modale
+  }
+
+  function endAddTask() {
+    setModalVisible(false); //Apre la modale
+  }
+
+  // function taskInputHandler(enteredTask) {
+  //   console.log(enteredTask);
+  //   setTask(enteredTask);
+  // }
+  function deleteTask(id) {
+    // setTasks((current) => {
+    //   return current.filter((t) => t.id !== id);
+    // });
+    doneTask(id)
+    loaaTasks()
+  }
+  function addTaskHandler(task) {
+   // setTasks((current) => [...current, { task, id: new Date() }]);
+   addTask(task)
+    loaaTasks()
+  }
+  // function addTaskHandler() {
+  //   setTasks((current) => [...current, { task,id:new Date()}]);
+  //   setTask("");
+  // }
+  async function loaaTasks(){
+    const tasks=await fetchTasks();
+    console.log(tasks)
+    setTasks(tasks)
+  }
+  useEffect(()=>{
+    loaaTasks()
+  },[])
+ const visibleTask=tasks.filter(t=>!t.done)
+  return (
+    <View style={styles.appContainer}>
+      <Button title="Add New Task" color="#5e0acc" onPress={startAddTask} />
+
+      <TaskInput visible={modalVisible} onAddTask={addTaskHandler} onCancel={endAddTask}></TaskInput>
+      {/* <View style={styles.inputContainer}>
+        <TextInput
+          style={styles.textInput}
+          placeholder="Inserisci task"
+          onChangeText={taskInputHandler}
+          value={task}
+        />
+        <Button
+          title="Aggiungi"
+          onPress={addTaskHandler}
+          disabled={task === ""}
+        ></Button>
+      </View> */}
+      <View style={styles.goalsContainer}>
+        <FlatList
+          alwaysBounceVertical={true}
+          data={visibleTask}
+          renderItem={(itemData) => {
+            return (
+              <TaskItem
+                onDelete={deleteTask}
+                taskItem={itemData.item}
+              ></TaskItem>
+              // <View style={styles.taskItem}>
+              //   <Text style={styles.taskText}>{itemData.item.task}</Text>
+              // </View>
+            );
+          }}
+          keyExtractor={(item) => item.id}
+        />
+        {/* <ScrollView>
+          {tasks.map((t, index) => (
+            <View key={index} style={styles.taskItem}>
+              <Text style={styles.taskText}>{t}</Text>
+            </View>
+          ))}
+        </ScrollView> */}
+      </View>
+    </View>
+  );
+}
+
+const styles = StyleSheet.create({
+  appContainer: {
+    flex: 1,
+    backgroundColor: "#fff",
+    paddingTop: 50,
+    paddingHorizontal: 16,
+  },
+
+  goalsContainer: {
+    flex: 4,
+  },
+});
+
+
+const TASKS_URL = "https://prova-its-web3-default-rtdb.firebaseio.com/tasks/";
+
+async function handleResponse(response) {
+  if (!response.ok) {
+    const errorText = response.text();
+    throw new Error("Fire base error:" + response.status + " " + errorText);
+  }
+  return response.json();
+}
+
+export async function fetchTasks() {
+  try {
+    const response = await fetch(TASKS_URL + ".json");
+    const data = await handleResponse(response);
+    // console.log("data",data)
+    if (!data) {
+      return [];
+    }
+    const tasks = Object.keys(data).map((id) => {
+      console.log(id);
+      return {
+        id,
+
+        ...data[id],
+      };
+    });
+    console.log("tasks", tasks);
+    return tasks;
+    //   return Object.entries(data).map(([id, value]) => ({
+    //   id,
+    //   text: value.text,
+    //   done: Boolean(value.done),
+    // }));
+  } catch (err) {
+    console.error("ERRORE fecthTasks:" + err);
+  }
+}
+
+export async function addTask(taskText) {
+  try {
+    const newTask = { text: taskText, done: false };
+    const response = await fetch(TASKS_URL + ".json", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(newTask),
+    });
+    return await response.json();
+  } catch (err) {
+    console.log("Errore:", err);
+    return null;
+  }
+}
+
+export async function doneTask(task) {
+  const response = await fetch(TASKS_URL + task.id + ".json", {
+    method: "PATCH",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ done: !task.done }),
+  });
+
+  await handleResponse(response);
+}
+import React from "react";
+import { Text, View ,StyleSheet, Pressable} from "react-native";
+
+const TaskItem = ({taskItem,onDelete}) => {
+  return (
+    <View style={styles.taskItem}>
+    <Pressable 
+    android_ripple={{ color: '#210644' }} 
+    onPress={()=>onDelete(taskItem)}
+    style={({ pressed }) => pressed && styles.pressedItem}
+
+    >
+   
+      <Text style={styles.taskText}>{taskItem.text}</Text>
+
+    </Pressable>
+    </View>
+  );
+};
+
+export default TaskItem;
+
+const styles = StyleSheet.create({
+  taskItem: {
+    margin: 8,
+    borderRadius: 6,
+    backgroundColor: "#5e0acc",
+  },
+  pressedItem:{
+    opacity:0.5
+  },
+  taskText: {
+    color: "#fff", 
+    padding: 8,
+  },
+});
+import React, { useState } from "react";
+import { StyleSheet, TextInput, View, Button, Modal, Image } from "react-native";
+
+const TaskInput = (props) => {
+  const [task, setTask] = useState("");
+
+  function taskInputHandler(enteredTask) {
+    console.log(enteredTask);
+    setTask(enteredTask);
+  }
+  function addTask() {
+    
+    props.onAddTask(task);
+    setTask("");
+    props.onCancel();
+  }
+  function annulla() {
+    setTask("");
+    props.onCancel();
+  }
+  return (
+    <Modal visible={props.visible} animationType="slide">
+      <View style={styles.inputContainer}>
+        <Image style={styles.image} source={require("../assets/images/goal.png")}></Image>
+        <TextInput
+          style={styles.textInput}
+          placeholder="Inserisci task"
+          onChangeText={taskInputHandler}
+          value={task}
+        />
+        <View style={styles.buttonContainer}>
+          <View style={styles.button}>
+            <Button
+              title="Aggiungi"
+              onPress={addTask}
+               color="#f31282"
+              disabled={task === ""}
+              
+            ></Button>
+          </View>
+          <View style={styles.button}>
+            <Button title="Annulla" onPress={annulla}  color="#b180f0"></Button>
+          </View>
+        </View>
+      </View>
+    </Modal>
+  );
+};
+
+const styles = StyleSheet.create({
+  textInput: {
+    borderWidth: 1,
+    borderColor: "#e4d0ff",
+    width: "70%",
+    padding: 8,
+    backgroundColor:"#e4d0ff"
+  },
+  image:{
+    width:100,
+    height:100,
+    margin:20
+  },
+  inputContainer: {
+    flex: 1,
+
+    justifyContent: "center",
+    alignItems: "center",
+    marginBottom: 24,
+    borderBottomWidth: 1,
+    borderBottomColor: "#cccccc",
+    gap: 16,
+    backgroundColor:"#311b6b"
+  },
+  buttonContainer: {
+    flexDirection: "row",
+  },
+  button: {
+    marginHorizontal: 8,
+  },
+});
+export default TaskInput;
